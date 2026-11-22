@@ -322,6 +322,8 @@ desenho.text((y_data, x_data), data, font=fonte, fill="white")
 
 # Salvando a imagem modificada
 imagem_fundo.save(f"Financas/image_{str(dados_acoes.tail(1).Close.T.reset_index().columns[-1])[:10]}.png", dpi=(1200, 1200))
+imagem_fundo.save(f"Financas/grafico.png", dpi=(1200, 1200))
+
 
 # Exibindo uma mensagem de sucesso
 print("Texto adicionado à imagem e salvo como output.jpg")
