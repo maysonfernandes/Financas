@@ -4,5 +4,5 @@ numpy==2.4.6
 pandas==3.1.1
 Pillow==13.0.0
 plotly==7.1.0
-rembg==2.0.87
+rembg[cpu]==2.0.87
 yfinance==1.8.0
