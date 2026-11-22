@@ -2,9 +2,8 @@ name: Executar Financas
 
 on:
   workflow_dispatch:
-  # Opcional: agendamento diário (ex.: 21h UTC)
   # schedule:
-  # - cron: "0 17 * * 1-5"
+  #   - cron: "0 17 * * 1-5"
 
 permissions:
   contents: write
@@ -24,26 +23,28 @@ jobs:
 
       - name: Instalar dependências
         run: |
+          set -e
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
 
       - name: Rodar script de finanças e atualizar README
         run: |
-          # 1. Execute seu script (ele deve salvar dados/imagens, ex.: em data/ e assets/)
+          set -e
           python financas.py
 
-          # 2. Atualize o bloco marcado no README.md
           python - <<'EOF'
-          from datetime import datetime
+          from datetime import datetime, timezone
           from pathlib import Path
 
           readme_path = Path("README.md")
-          conteudo = readme_path.read_text(encoding="utf-8")
+          conteudo = readme_path.read_text(encoding="utf-8") if readme_path.exists() else "# Finanças\n"
 
           inicio = "<!-- FINANCAS_START -->"
           fim = "<!-- FINANCAS_END -->"
 
-          agora = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+          agora = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
           bloco_novo = f"""{inicio}
           Última atualização: **{agora}**
 
@@ -65,11 +66,11 @@ jobs:
 
       - name: Salvar dados, imagens e README no repositório
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Adicione as pastas/arquivos gerados pelo seu script + README.md
-          git add README.md Dados_Colab/ Financas/
+          git add -A
 
           if git diff --staged --quiet; then
             echo "Nenhuma alteração para commitar."
